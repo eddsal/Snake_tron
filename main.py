@@ -54,27 +54,32 @@ class Snake(pygame.sprite.Sprite):
         surface.blit(self.image, self.rect)
 
 
-apples = []
-xpos = []
+def range_appender(rng, value):
+    xpos = []
+    for i in range(rng):
+        xpos.append(value)
+    return xpos
 
-for i in range(15):
-    xpos.append([random.randint(0, 500), random.randint(0, 500)])
-for i in range(15):
-    print(xpos)
-    apples.append(Apple(xpos[i]))
 
-print(apples)
-
+apples = range_appender(10, Apple([random.randint(0, 500), random.randint(0, 500)]))
 E1 = Snake()
+
 while True:
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+
     DISPLAYSURF.fill(BLACK)
     for a in apples:
         a.draw(DISPLAYSURF)
     E1.update()
     E1.draw(DISPLAYSURF)
+    grounded = 0
+    for p in apples:
+        if E1.rect.collidepoint(p.rect.centerx, p.rect.bottom+4):
+            print('collpase')
+            grounded = 1
+            break
     pygame.display.update()
     FramePerSec.tick(FPS)
