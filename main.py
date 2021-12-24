@@ -9,7 +9,8 @@ SIZE = 40
 class Apple:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
-        self.image = pygame.image.load("./apple.jpeg").convert()
+        self.image = pygame.image.load("apple.png")
+        self.image = pygame.transform.scale(self.image, (40, 40))
         self.x = 20
         self.y = 20
 
@@ -90,34 +91,51 @@ class Game:
                 return True
         return False
 
-    def is_snake_collision(self, x1, y1,):
-        if x1 and y1:
-            print('collisiion')
-        return False
+    def render_background(self):
+        bg = pygame.image.load("./background.jpeg")
+        self.surface.blit(bg, (0, 0))
+
+    # Displayin the score on the top corner
 
     def display_score(self):
         font = pygame.font.SysFont('arial', 30)
         score = font.render(f"Score: {self.snake.length}", True, (200, 200, 200))
         self.surface.blit(score, (850, 10))
 
+    def show_game_over(self):
+        self.render_background()
+        font = pygame.font.SysFont('arial', 30)
+        line1 = font.render(f"Game is over! Your score is {self.snake.length}", True, (255, 255, 255))
+        self.surface.blit(line1, (200, 300))
+        line2 = font.render("To play again press Enter. To exit press Escape!", True, (255, 255, 255))
+        self.surface.blit(line2, (200, 350))
+        pygame.display.flip()
+    # When snake collision
+
+    def snake_collision(self):
+        for i in range(3, self.snake.length):
+            if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
+                print("Collision Occurred")
+                return True
+
     def play(self):
         self.snake.walk()
         self.apple.draw()
         self.display_score()
         pygame.display.flip()
+        self.snake_collision()
 
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
             self.snake.increase_length()
             self.apple.move()
 
-        # When snake collision
-        for i in range(3, self.snake.length):
-            if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
-                print("Collision Occurred")
-
     def run(self):
         running = True
         while running:
+            if self.snake_collision():
+                running = False
+                self.show_game_over()
+
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
