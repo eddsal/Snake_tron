@@ -8,6 +8,7 @@ SIZE = 40
 
 class Apple:
     def __init__(self, parent_screen):
+        print('dsds', parent_screen)
         self.parent_screen = parent_screen
         self.image = pygame.image.load("apple.png")
         self.image = pygame.transform.scale(self.image, (40, 40))
@@ -84,6 +85,7 @@ class Game:
         self.snake.draw()
         self.apple = Apple(self.surface)
         self.apple.draw()
+        self.call = False
 
     def is_collision(self, x1, y1, x2, y2):
         if x1 >= x2 and x1 < x2 + SIZE:
@@ -99,7 +101,7 @@ class Game:
 
     def display_score(self):
         font = pygame.font.SysFont('arial', 30)
-        score = font.render(f"Score: {self.snake.length}", True, (200, 200, 200))
+        score = font.render(f"Score: {self.snake.length - 2}", True, (200, 200, 200))
         self.surface.blit(score, (850, 10))
 
     def show_game_over(self):
@@ -123,7 +125,6 @@ class Game:
         self.apple.draw()
         self.display_score()
         pygame.display.flip()
-        self.snake_collision()
 
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
             self.snake.increase_length()
@@ -131,33 +132,33 @@ class Game:
 
     def run(self):
         running = True
+        collision = False
         while running:
             if self.snake_collision():
-                running = False
+                collision = True
                 self.show_game_over()
+            if not collision:
+                for event in pygame.event.get():
+                    if event.type == KEYDOWN:
+                        if event.key == K_ESCAPE:
+                            running = False
 
-            for event in pygame.event.get():
-                if event.type == KEYDOWN:
-                    if event.key == K_ESCAPE:
+                        if event.key == K_LEFT:
+                            self.snake.move_left()
+
+                        if event.key == K_RIGHT:
+                            self.snake.move_right()
+
+                        if event.key == K_UP:
+                            self.snake.move_up()
+
+                        if event.key == K_DOWN:
+                            self.snake.move_down()
+
+                    elif event.type == QUIT:
                         running = False
 
-                    if event.key == K_LEFT:
-                        self.snake.move_left()
-
-                    if event.key == K_RIGHT:
-                        self.snake.move_right()
-
-                    if event.key == K_UP:
-                        self.snake.move_up()
-
-                    if event.key == K_DOWN:
-                        self.snake.move_down()
-
-                elif event.type == QUIT:
-                    running = False
-
-            self.play()
-
+                self.play()
             time.sleep(.2)
 
 
