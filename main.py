@@ -130,6 +130,9 @@ class Game:
             self.snake.increase_length()
             self.apple.move()
 
+        if self.is_collision(self.snake.x[0], self.snake.y[0], 500, 500):
+            print('ds')
+
     def run(self):
         running = True
         collision = False
